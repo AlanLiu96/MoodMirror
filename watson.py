@@ -25,7 +25,6 @@ def send_watson(sentence):
 	# social_tone = result["document_tone"]["tone_categories"][2]["tones"]
 
 	for emo in emotion_tone:
-		print "here! :)"
 		ret[emo["tone_id"]]=emo["score"]
 
 	# anger = emotion_tone[0]["score"]
