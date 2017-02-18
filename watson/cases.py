@@ -15,8 +15,8 @@ from bs4 import BeautifulSoup
 # Setup IBM Watson APIs
 creds = {
   "url": "https://gateway.watsonplatform.net/tone-analyzer/api",
-  "password": "hbbozehNfKLM",
-  "username": "1424013d-badb-4bea-9e71-da73a2ffa5ed"
+  "username": "58471750-236c-4103-85ea-15ef328025e6",
+  "password": "nzBOc8Zk02LR"
 }
 
 tone_analyzer = ToneAnalyzerV3(
@@ -35,7 +35,7 @@ def visible(element):
 with open('cases3.csv', 'r') as oldcsv, open('data.csv', 'a') as newcsv:
 	links = csv.reader(oldcsv)
 	data = csv.writer(newcsv)
-	
+
 	counter = 0
 	for row in links:
 		# copy header row
@@ -53,10 +53,10 @@ with open('cases3.csv', 'r') as oldcsv, open('data.csv', 'a') as newcsv:
 		html = urllib.urlopen(url).read()
 		soup = BeautifulSoup(html)
 		texts = soup.find_all(text=True)
-		visible_texts = filter(visible, texts)		
+		visible_texts = filter(visible, texts)
 
 		# set regex pattern for isolating caseType segment we're looking for
-		pattern = ""	
+		pattern = ""
 		if caseType == "opinion":
 			pattern = "justice " + justice + "(?:\s)?delivered the opinion of the court"
 		elif caseType == "concurrence":
@@ -90,7 +90,7 @@ with open('cases3.csv', 'r') as oldcsv, open('data.csv', 'a') as newcsv:
 				prevchunk = chunk
 		text = ' '.join(segment)
 
-		case = text.encode('utf-8') 
+		case = text.encode('utf-8')
 
 		# If case contains text, do text analysis
 		if case:
