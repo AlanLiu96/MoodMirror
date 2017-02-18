@@ -1,0 +1,15 @@
+requests
+google-api-python-client
+google-cloud-storage
+protobuf
+pillow
+pycurl
+bs4
+numpy
+scikit-image
+webcolors
+colorsys
+cython
+zlib
+scipy
+matplotlib
