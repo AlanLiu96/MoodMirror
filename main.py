@@ -37,7 +37,7 @@ def upload_photo():
     # should_take_photo = (False, "") # disabled
     file = request.files['photo']
     file.save('images/test.jpg')
-    return 'Done'
+    return jsonify({"success": True})
 
 # Alexa
 # Signals start taking photos
