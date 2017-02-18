@@ -30,9 +30,9 @@ def check_trigger():
     return jsonify({"ready": should_take_photo[0]})
 
 # Android
-# Uploads an image snd saves it to URL
-@app.route('/upload_image', methods=['POST'])
-def upload_image():
+# Uploads an image and saves it to URL
+@app.route('/upload_photo', methods=['POST'])
+def upload_photo():
     global should_take_photo
     # should_take_photo = (False, "") # disabled
     file = request.files['photo']
@@ -92,7 +92,7 @@ def read_image():
     print('Labels:')
     for label in labels:
         print(label.description)
-    return " ".join(labels)
+    return "done!"
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=3000, debug=True)
