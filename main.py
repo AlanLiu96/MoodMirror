@@ -31,7 +31,7 @@ def check_trigger():
 
 # Android
 # Uploads an image snd saves it to URL
-@app.route('/upload-image', methods=['POST'])
+@app.route('/upload_image', methods=['POST'])
 def upload_image():
     global should_take_photo
     # should_take_photo = (False, "") # disabled
