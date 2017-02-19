@@ -66,7 +66,7 @@ def finish():
 
 @app.route('/graphs')
 def graphs():
-    json = '{"mydate":new Date("%s")}' % date.ctime()
+    # json = '{"mydate":new Date("%s")}' % date.ctime()
     return render_template('graphs.html')
 
 # Android
