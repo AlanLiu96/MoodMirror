@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="main-content">
-    <svg id="canvas" width="1000" height="800"></svg>
+    <div id="graphContent">
+    
     </div>  
 {% endblock %}
 {% block scripts %}
@@ -17,13 +17,18 @@ var colors = {
     'fear': '#EEE8AA',
     'anger': 'green'
 }
-var canvas = d3.select("#canvas"),
-    margin = {top: 20, right: 0, bottom: 30, left: 70}
+
+var canvas = d3.select("#graphContent").append("svg")
+    .attr("id","canvas")
+    .attr("width", 400)
+    .attr("height", 800)
+
+    margin = {top: 0, right: 0, bottom: 30, left: 70}
     console.log(canvas.attr("width"))
-    width = +canvas.attr("width") - margin.left - margin.right,
+    width = +d3.select("#canvas").attr("width") - margin.left - margin.right,
     padding = 20
     console.log(width)
-    height = (+canvas.attr("height")- padding*emotes.length - margin.top - margin.bottom)/emotes.length
+    height = (+canvas.attr("height")- padding*(emotes.length-1) - margin.top - margin.bottom)/emotes.length
     //console.log(height)
     for(i in emotes){
         console.log(i)
