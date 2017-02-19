@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
     <div id="time">
-        <div id="time_hours">07</div>
+        <div id="time_hours">{{hour}}</div>
         <br>
-        <div id="time_min">38</div>
+        <div id="time_min">{{minute}}</div>
         <br>
-        <div id="time_median">AM</div>
+        <div id="time_median">{{am_pm}}</div>
         <hr />
         <div id="time_weather"><img src="{{ url_for('static', filename='img/TH17_icons-01.png') }}"></div>
     </div>
@@ -14,6 +14,6 @@
         <div><img src="{{ url_for('static', filename='img/TH17_icons-04.png') }}"></div>
          Tell Alexa to take you to Mirror Maru.
     </div>
-    
+
 {% endblock %}
 {% block scripts %}{% endblock %}
