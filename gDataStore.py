@@ -44,11 +44,11 @@ def retrieveFromTable(startDate):
 
     emotionDataRecords = query.fetch()
     for emotionData in emotionDataRecords:
-        print str(emotionData)
+        print(str(emotionData))
         sessionData = {}
         for emotion in emotionData:
-            print emotion
+            print(emotion)
             sessionData[str(emotion)] = emotionData[emotion]
         data.append(sessionData)
-    print data
+    print(data)
     return data

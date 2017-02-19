@@ -1,0 +1,17 @@
+<doctype! html>
+
+<head> 
+    Home
+    <title>Home</title>
+    <!-- CSS --> 
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,700" rel="stylesheet">
+    <!-- JS -->
+</head>
+
+<body>
+    {% block content %}{% endblock %}
+    {% block scripts %}{% endblock %}
+</body>
+
+</html>

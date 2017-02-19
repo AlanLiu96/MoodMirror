@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+    <div id="time">
+        <div id="time_hours">07</div>
+        <br>
+        <div id="time_min">38</div>
+        <br>
+        <div id="time_median">AM</div>
+        <hr />
+        <div id="time_weather"><img src="{{ url_for('static', filename='img/TH17_icons-01.png') }}"></div>
+    </div>
+
+    <div id="bottom">
+        <div><img src="{{ url_for('static', filename='img/TH17_icons-04.png') }}"></div>
+         Tell Alexa to take you to Mirror Maru.
+    </div>
+    
+{% endblock %}
+{% block scripts %}{% endblock %}

@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="main-content">
+    <svg id="canvas" width="1000" height="800"></svg>
+    </div>  
+{% endblock %}
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.5.1/d3.min.js"></script>
+<script>
+var data= [{'joy': 0.969091, 'messages': ['Hello World! :)'], 'datetime': new Date(2017, 2, 18, 19, 3, 25, 135095), 'sadness': 0.013941, 'disgust': 0.011139, 'anger': 0.023479, 'fear': 0.003429}, {'joy': 2.907273, 'messages': ['Hello World! :)', 'Hello World! :)', 'Hello World! :)'], 'datetime': new Date(2017, 2, 18, 19, 4, 31, 66822), 'sadness': 0.041823, 'disgust': 0.033417, 'anger': 0.070437, 'fear': 0.010287000000000001}, {'joy': 4.120879, 'messages': ['Hello World! :)', 'Hello World! :', 'Hello World! ', 'Hello Word! ', 'Hello Wod! '], 'datetime': new Date(2017, 2, 18, 19, 8, 46, 317477), 'sadness': 0.404192, 'disgust': 0.139427, 'anger': 0.370317, 'fear': 0.177183}, {'joy': 0.8100878, 'messages': ['Hello Wod! ', 'Hello Wrod! ', 'Hello Wrosd! ', 'Hello Wrosd!s ', 'Hello Wrosd!s '], 'datetime': new Date(2017, 2, 18, 19, 9, 49, 309913), 'sadness': 0.0439504, 'disgust': 0.0282088, 'anger': 0.1238524, 'fear': 0.0547894}];
+
+var emotes = ['joy','sadness','disgust','fear','anger']
+var canvas = d3.select("#canvas"),
+    margin = {top: 20, right: 20, bottom: 30, left: 50}
+    console.log(canvas.attr("width"))
+    width = +canvas.attr("width") - margin.left - margin.right,
+    padding = 20
+    console.log(width)
+    height = (+canvas.attr("height")- margin.top - margin.bottom)/emotes.length
+    console.log(height)
+    for(i in emotes){
+        console.log(i)
+        console.log(margin.top)
+        canvas.append("g").attr("id",emotes[i]).attr("height",height).attr("width", width)
+            .attr("transform",
+          "translate(" + margin.left + "," + (padding+height)*i + ")")
+    }
+
+var parseTime = d3.timeParse("%d-%b-%y");
+
+var x = d3.scaleTime()
+    .rangeRound([0, width]);
+
+var y = d3.scaleLinear()
+    .rangeRound([height, 0]);
+
+var area = d3.area()
+    .x(function(d) { return x(d.date); })
+    .y1(function(d) { return y(d.close); });
+
+for(i in emotes){
+    g = canvas.select("#"+emotes[i])
+    var DATA = []
+    for(x in data){
+        console.log(data[x])
+        DATA.push({
+            'time': (data[x].datetime), 
+            'sentiment': +data[x][emotes[i]]
+        })
+        console.log(DATA)
+    }
+    d3.json(DATA, function(d){
+        console.log(d)
+        return d;
+        }, function(error, dat) {
+        if (error) throw error;
+
+        x.domain(d3.extent(dat, function(d) { return d.time; }));
+        y.domain([0, d3.max(dat, function(d) { return d.sentiment; })]);
+        area.y0(y(0));
+
+        g.append("path")
+            .datum(dat)
+//            .attr("fill", "gray")
+            .attr("d", area);
+
+        g.append("g")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x));
+
+        g.append("g")
+            .call(d3.axisLeft(y))
+            .append("text")
+            .attr("fill", "#000")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+        .attr("dy", "0.71em")
+        .attr("text-anchor", "end")
+            .text("Sentiment");
+    })
+}
+
+</script>
+{% endblock %}

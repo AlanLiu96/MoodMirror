@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template, url_for
 from datetime import datetime
 import base64
 import os
@@ -14,6 +14,8 @@ from gDataStore import storeInTable, retrieveFromTable
 
 app = Flask(__name__)
 
+
+
 results = {'numEntry':0, 'fear':0.0, 'anger':0.0, 'joy':0.0, 'sadness':0.0, 'disgust':0.0, 'messages':[]}
 
 should_take_photo = (False, "")
@@ -21,17 +23,42 @@ should_take_photo = (False, "")
 def add_error(results, reason):
     results['error'] = reason
 
-@app.route('/')
-def hello_world():
-    return "Hello World! What a beautiful day :) "
+@app.context_processor
+def override_url_for():
+    return dict(url_for=dated_url_for)
 
-# Android
-# Checks if photo has been uploaded
-@app.route('/check_trigger', methods=['GET'])
-def check_trigger():
-    global should_take_photo
-    print(should_take_photo)
-    return jsonify({"ready": should_take_photo[0]})
+def dated_url_for(endpoint, **values):
+    if endpoint == 'static':
+        filename = values.get('filename', None)
+        if filename:
+            file_path = os.path.join(app.root_path,
+                                     endpoint, filename)
+            values['q'] = int(os.stat(file_path).st_mtime)
+    return url_for(endpoint, **values)
+
+# views
+@app.route('/')
+def index():
+    return render_template('home.html')
+@app.route('/intro1')
+def intro1():
+    return render_template('intro1.html')
+
+@app.route('/intro2')
+def intro2():
+    return render_template('intro2.html')
+
+@app.route('/encouragement')
+def encouragement():
+    return render_template('encouragement.html')
+
+@app.route('/finish')
+def finish():
+    return render_template('finish.html')
+
+@app.route('/graphs')
+def graphs():
+    return render_template('graphs.html')
 
 # Android
 # Uploads an image and saves it to URL
@@ -90,9 +117,9 @@ def store_message():
 @app.route('/image_test')
 def read_image():
     # Instantiates a Google Vision client
-    print "trying to create client"
+    print("trying to create client")
     vision_client = vision.Client()
-    print "FINISHING CREATING CLIENT"
+    print("FINISHING CREATING CLIENT")
 
     # The name of the image file to annotate
     file_name = os.path.join(
@@ -105,7 +132,7 @@ def read_image():
             content=content)
     # look for faces
     faces = image.detect_faces(limit=10)
-    print "I found", str(len(faces)), "faces"
+    print("I found", str(len(faces)), "faces")
 
     # for face in faces:
     face = faces[0]
@@ -141,7 +168,7 @@ def test():
 
 def likelihoodToNum(likelihoodStr):
     if likelihoodStr == "UNKNOWN":
-        print "UNKNOWN LIKELIHOOD FOR FACE"
+        print("UNKNOWN LIKELIHOOD FOR FACE")
         return -1
     elif likelihoodStr == "VERY_LIKELY":
         return 1.0
