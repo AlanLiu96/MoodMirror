@@ -149,7 +149,7 @@ def store_message():
 def trigger_next():
     global next_trig
     next_trig = (True, "")
-    print next_trig, "is trigger_next"
+    print(next_trig, "is trigger_next")
     return "next triggered"
 
 
@@ -159,7 +159,7 @@ def trigger_next():
 def trigger_history():
     global hist_trig
     hist_trig = (True, "")
-    print hist_trig, "is trigger_history"
+    print(hist_trig, "is trigger_history")
     return "history triggered"
 
 
