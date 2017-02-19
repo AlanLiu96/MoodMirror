@@ -225,7 +225,7 @@ def test():
     for testDict in testDictList:
         for i in range(len(testDict['messages'])):
             testDict['messages'][i] = str(testDict['messages'][i])
-            json = '{"mydate":new Date("%s")}' % date.ctime()
+            # json = '{"mydate":new Date("%s")}' % date.ctime()
         testDict = str(testDict)
     return str(testDictList)
 
