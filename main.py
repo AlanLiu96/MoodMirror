@@ -48,10 +48,6 @@ def index():
     hour = current_datetime.hour % 12 if current_datetime.hour % 12  != 0 else 12
     return render_template('home.html', hour=('%02d' % hour), minute=current_datetime.minute, am_pm=am_pm)
 
-def local_to_desiredTZ():
-    local_dt = datetime.now(pytz.utc).replace(tzinfo=pytz.utc).astimezone(pacific_tz)
-    return local_dt # .normalize might be unnecessary
-
 @app.route('/intro1')
 def intro1():
     return render_template('intro1.html')
@@ -182,7 +178,7 @@ def read_image(image_file):
     # Instantiates a Google Vision client
     print("trying to create client")
     vision_client = vision.Client()
-    print("FINISHING CREATING CLIENT")
+    # print("FINISHING CREATING CLIENT")
 
     # # The name of the image file to annotate
     # file_name = os.path.join(
@@ -253,6 +249,10 @@ def addEmotions(ret):
         else:
             results[item]+=ret[item]
     return "added to Session"
+
+def local_to_desiredTZ():
+    local_dt = datetime.now(pytz.utc).replace(tzinfo=pytz.utc).astimezone(pacific_tz)
+    return local_dt
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=3000, debug=True)
