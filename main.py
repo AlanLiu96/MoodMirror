@@ -46,7 +46,7 @@ def index():
     current_datetime = local_to_desiredTZ()
     am_pm = "AM" if current_datetime.hour <= 12 else "PM"
     hour = current_datetime.hour % 12 if current_datetime.hour % 12  != 0 else 12
-    return render_template('home.html', hour=('%02d' % hour), minute=current_datetime.minute, am_pm=am_pm)
+    return render_template('home.html', hour=('%02d' % hour), minute=('%02d' % current_datetime.minute), am_pm=am_pm)
 
 @app.route('/intro1')
 def intro1():
