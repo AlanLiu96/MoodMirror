@@ -113,7 +113,7 @@ const handlers = {
     'MoodIntent': function () {
         console.log('beginning MoodIntent');
         // const input = this.event.request.intent.slots.response;
-        var input = util.inspect(this.event.request.type, false, null)
+        var input = this.event.request.intent.slots.Question.value
 
         // let inputPhrase;
 
@@ -122,7 +122,7 @@ const handlers = {
 
         // console.log(input);
 
-        console.log(util.inspect(this.event.request.type, false, null))
+        console.log(input);
         console.log('hello hello bye');
 
         // if (input && input.value) {
