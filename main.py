@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request
+from datetime import datetime
 import base64
 import os
 import io
@@ -9,9 +10,11 @@ from google.cloud import vision
 
 # custom imports
 from watson import send_watson
-from gDataStore import storeInTable
+from gDataStore import storeInTable, retrieveFromTable
 
 app = Flask(__name__)
+
+results = {'numEntry':0, 'fear':0.0, 'anger':0.0, 'joy':0.0, 'sadness':0.0, 'disgust':0.0, 'messages':[]}
 
 should_take_photo = (False, "")
 
@@ -56,6 +59,16 @@ def trigger_stop():
     global should_take_photo
     should_take_photo = (False, "")
     print(should_take_photo)
+    # store old results if applicable
+    global results
+    if results['numEntry']>0:
+        for item in results:
+            if item != "messages" and item != 'numEntry':
+                results[item] = results[item]/results['numEntry']
+        results.pop('numEntry')
+        storeInTable(results)
+        # reset results
+        results = {'numEntry':0, 'fear':0, 'anger':0, 'joy':0, 'sadness':0, 'disgust':0, 'messages':[]}
     return str(random.randrange(1, 5))
 
 # Alexa
@@ -63,13 +76,13 @@ def trigger_stop():
 def store_message():
     message = request.args.get('msg') # expect qString of msg
     if message == None:
-        return 1 #error : no qString
+        return "I couldn't find a message! :(" #error : no qString
 
     #Send to IBM Watson
     ret = send_watson(message) # ret val is a dict with emotion Ids mapped to emotion scores
     ret['message'] = message
-    stored = storeInTable(ret)
-    return message + " after being parsed: " + str(ret) + stored
+    sessions = addEmotions(ret) # adds to current Session
+    return message + " after being parsed: " + str(ret) + sessions
 
 # Image Read
 # Finds the first face and finds emotion
@@ -84,7 +97,7 @@ def read_image():
     # The name of the image file to annotate
     file_name = os.path.join(
         os.path.dirname(__file__),
-        'images/test2.jpg')
+        'images/test.jpg')
     # Loads the image into memory
     with io.open(file_name, 'rb') as image_file:
         content = image_file.read()
@@ -113,8 +126,18 @@ def read_image():
     print('Labels:')
     for label in labels:
         print(label.description)
-    storeInTable(ret)
+    addEmotions(ret)
     return "Facial Emotions: " + str(ret)
+
+@app.route('/test')
+def test():
+    start_date = datetime(1990, 1, 1)
+    testDictList = retrieveFromTable(start_date)
+    for testDict in testDictList:
+        for i in range(len(testDict['messages'])):
+            testDict['messages'][i] = str(testDict['messages'][i])
+        testDict = str(testDict)
+    return str(testDictList)
 
 def likelihoodToNum(likelihoodStr):
     if likelihoodStr == "UNKNOWN":
@@ -131,6 +154,14 @@ def likelihoodToNum(likelihoodStr):
     elif likelihoodStr == "VERY_UNLIKELY":
         return 0.0
 
+def addEmotions(ret):
+    results['numEntry']+=1
+    for item in ret:
+        if item == 'message':
+            results['messages'].append(ret[item])
+        else:
+            results[item]+=ret[item]
+    return "added to Session"
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=3000, debug=True)
