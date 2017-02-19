@@ -4,6 +4,8 @@ import base64
 import os
 import io
 import random
+import pytz
+
 
 # Imports the Google Cloud client library
 from google.cloud import vision
@@ -19,6 +21,8 @@ results = {'numEntry':0, 'fear':0.0, 'anger':0.0, 'joy':0.0, 'sadness':0.0, 'dis
 should_take_photo = (False, "")
 next_trig = (False, "")
 hist_trig = (False, "")
+
+pacific_tz = pytz.timezone('America/Los_Angeles') # desired time zone
 
 def add_error(results, reason):
     results['error'] = reason
@@ -39,10 +43,14 @@ def dated_url_for(endpoint, **values):
 # views
 @app.route('/')
 def index():
-    current_datetime = datetime.now()
+    current_datetime = local_to_desiredTZ()
     am_pm = "AM" if current_datetime.hour <= 12 else "PM"
     hour = current_datetime.hour % 12 if current_datetime.hour % 12  != 0 else 12
     return render_template('home.html', hour=('%02d' % hour), minute=current_datetime.minute, am_pm=am_pm)
+
+def local_to_desiredTZ():
+    local_dt = datetime.now(pytz.utc).replace(tzinfo=pytz.utc).astimezone(pacific_tz)
+    return local_dt # .normalize might be unnecessary
 
 @app.route('/intro1')
 def intro1():
