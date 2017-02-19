@@ -12,22 +12,22 @@ Then run using main.py
 
 It will run on localhost:3000
 
-### Routes
+# Routes
 
 Static server URL at 104.196.44.38:3000
 
 ##Android
 
-#GET
+###GET
 
 - /check_trigger - Checks if photo has been uploaded
 
-#POST
+###POST
 
 - /upload_photo -  Uploads a photo and saves it to URL
 ##Alexa
 
-#GET
+###GET
 
 - /trigger_photo - Signals to start taking photos
 - /trigger_stop - Signals to stop taking photos
