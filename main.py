@@ -14,11 +14,11 @@ from gDataStore import storeInTable, retrieveFromTable
 
 app = Flask(__name__)
 
-
-
 results = {'numEntry':0, 'fear':0.0, 'anger':0.0, 'joy':0.0, 'sadness':0.0, 'disgust':0.0, 'messages':[]}
 
 should_take_photo = (False, "")
+next_trig = (False, "")
+hist_trig = (False, "")
 
 def add_error(results, reason):
     results['error'] = reason
@@ -61,13 +61,45 @@ def graphs():
     return render_template('graphs.html')
 
 # Android
+# Checks if photo has been uploaded
+@app.route('/check_trigger', methods=['GET'])
+def check_trigger():
+    global should_take_photo
+    print(should_take_photo)
+    return jsonify({"ready": should_take_photo[0]})
+
+
+# Android
+# Checks if photo has been uploaded
+@app.route('/check_next', methods=['GET'])
+def check_next():
+    global next_trig
+    print(next_trig)
+    ready = True if next_trig[0] else False
+    if next_trig[0]:
+        next_trig = (False, "")
+    return jsonify({"ready": ready})
+
+
+# Android
+# Checks if photo has been uploaded
+@app.route('/check_history', methods=['GET'])
+def check_history():
+    global hist_trig
+    print(hist_trig)
+    ready = True if hist_trig[0] else False
+    if hist_trig[0]:
+        hist_trig = (False, "")
+    return jsonify({"ready": ready})
+
+# Android
 # Uploads an image and saves it to URL
 @app.route('/upload_photo', methods=['POST'])
 def upload_photo():
     global should_take_photo
-    # should_take_photo = (False, "") # disabled
     file = request.files['photo']
-    file.save('images/test.jpg')
+    read_image(file)
+    # file.save('images/test.jpg')
     return jsonify({"success": True})
 
 # Alexa
@@ -111,25 +143,46 @@ def store_message():
     sessions = addEmotions(ret) # adds to current Session
     return message + " after being parsed: " + str(ret) + sessions
 
+# Alexa
+# Signals move to next
+@app.route('/trigger_next', methods=['GET'])
+def trigger_next():
+    global next_trig
+    next_trig = (True, "")
+    print next_trig, "is trigger_next"
+    return "next triggered"
+
+
+# Alexa
+# Signals start history
+@app.route('/trigger_history', methods=['GET'])
+def trigger_history():
+    global hist_trig
+    hist_trig = (True, "")
+    print hist_trig, "is trigger_history"
+    return "history triggered"
+
+
 # Image Read
 # Finds the first face and finds emotion
 # Then returns a dict with those emotions, while saving to a db
-@app.route('/image_test')
-def read_image():
+# @app.route('/image_test')
+def read_image(image_file):
     # Instantiates a Google Vision client
     print("trying to create client")
     vision_client = vision.Client()
     print("FINISHING CREATING CLIENT")
 
-    # The name of the image file to annotate
-    file_name = os.path.join(
-        os.path.dirname(__file__),
-        'images/test.jpg')
+    # # The name of the image file to annotate
+    # file_name = os.path.join(
+    #     os.path.dirname(__file__),
+    #     'images/test.jpg')
+
     # Loads the image into memory
-    with io.open(file_name, 'rb') as image_file:
-        content = image_file.read()
-        image = vision_client.image(
-            content=content)
+    # with io.open(file_name, 'rb') as image_file:
+    content = image_file.read()
+    image = vision_client.image(
+        content=content)
     # look for faces
     faces = image.detect_faces(limit=10)
     print("I found", str(len(faces)), "faces")
