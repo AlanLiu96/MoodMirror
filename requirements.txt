@@ -8,6 +8,7 @@ google-auth==0.7.0
 google-auth-httplib2==0.0.2
 google-cloud-core==0.22.1
 google-cloud-vision==0.22.0
+google-cloud-datastore==0.22.0
 googleapis-common-protos==1.5.2
 httplib2==0.10.3
 itsdangerous==0.24
