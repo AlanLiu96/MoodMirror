@@ -66,6 +66,7 @@ def finish():
 
 @app.route('/graphs')
 def graphs():
+    json = '{"mydate":new Date("%s")}' % date.ctime()
     return render_template('graphs.html')
 
 # Android
@@ -147,9 +148,10 @@ def store_message():
 
     #Send to IBM Watson
     ret = send_watson(message) # ret val is a dict with emotion Ids mapped to emotion scores
+    retVal = max(ret, key=lambda key: ret[key])
     ret['message'] = message
     sessions = addEmotions(ret) # adds to current Session
-    return message + " after being parsed: " + str(ret) + sessions
+    return retVal
 
 # Alexa
 # Signals move to next
@@ -223,6 +225,7 @@ def test():
     for testDict in testDictList:
         for i in range(len(testDict['messages'])):
             testDict['messages'][i] = str(testDict['messages'][i])
+            json = '{"mydate":new Date("%s")}' % date.ctime()
         testDict = str(testDict)
     return str(testDictList)
 
