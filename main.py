@@ -67,6 +67,7 @@ def finish():
 @app.route('/graphs')
 def graphs():
     # json = '{"mydate":new Date("%s")}' % date.ctime()
+    # json = getRecordedData()
     return render_template('graphs.html')
 
 # Android
@@ -76,7 +77,6 @@ def check_trigger():
     global should_take_photo
     print(should_take_photo)
     return jsonify({"ready": should_take_photo[0]})
-
 
 # Android
 # Checks if photo has been uploaded
@@ -219,16 +219,22 @@ def read_image(image_file):
     addEmotions(ret)
     return "Facial Emotions: " + str(ret)
 
-@app.route('/test')
-def test():
+# @app.route('/test')
+def getRecordedData():
     start_date = datetime(1990, 1, 1)
     testDictList = retrieveFromTable(start_date)
-    for testDict in testDictList:
+    newList = []
+    for j in range(len(testDictList)):
+        testDict = testDictList[j]
         for i in range(len(testDict['messages'])):
             testDict['messages'][i] = str(testDict['messages'][i])
             # json = '{"mydate":new Date("%s")}' % date.ctime()
-        testDict = str(testDict)
-    return str(testDictList)
+        # testDict1 = "{\'joy\': %f, \'datetime\': new Date(%s)}, \'sadness\': %f, \'disgust\': %f, \'anger\': %f, \'fear\': %f" % (testDict['joy'], testDict['datetime'].ctime(), testDict['sadness'], testDict['disgust'], testDict['anger'], testDict['fear'])
+        # testDict2 =  ",\'messages\': " + str(testDict['messages']) +  "}"
+        # testDict = testDict1 + testDict2
+        newList.append(testDict)
+        print newList
+    return str(newList)
 
 def likelihoodToNum(likelihoodStr):
     if likelihoodStr == "UNKNOWN":
