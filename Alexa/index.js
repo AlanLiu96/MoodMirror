@@ -88,6 +88,76 @@ function sendentry(callback) {
 }
 
 
+function nextpage(callback) {
+
+  return http.get({
+    host: '104.196.44.38',
+    port: 3000,
+    path: '/trigger_next'
+  }, function(response) {
+
+    var body = '';
+    response.on('data', function(c) {
+     body += c;
+    });
+    response.on('end', function() {
+     console.log(body);
+     var message = body;
+     callback(message);
+    });
+  }).on('socket', (socket) => {
+    socket.emit('agentRemove');
+  });
+
+}
+
+
+function history(callback) {
+
+  return http.get({
+    host: '104.196.44.38',
+    port: 3000,
+    path: '/trigger_history'
+  }, function(response) {
+
+    var body = '';
+    response.on('data', function(c) {
+     body += c;
+    });
+    response.on('end', function() {
+     console.log(body);
+     var message = body;
+     callback(message);
+    });
+  }).on('socket', (socket) => {
+    socket.emit('agentRemove');
+  });
+
+}
+
+
+function randoResponse() {
+  var body = [];
+  request.on('data', function(c) {
+    body.push(c);
+  }).on('end', function() {
+    body = Buffer.concat(body).toString();
+  })
+  console.log(body);
+  var x = Math.random();
+  console.log(x);
+  if (x < 0.20) {
+    return "That's great!";
+  } else if (x >= 0.20 && x < 0.4) {
+    return "That's interesting, tell me more!";
+  } else if (x >= 0.4 && x < 0.6) {
+    return "ooh, keep going, you're simply fascinating"
+  } else if (x >= 0.6 && x < 0.8){
+    return "I am so sorry. Is there anything I can do to help? Let us have a girls' night tonight, and watch Mean Girls with ice cream!!"
+  } else {
+    return "Hey, are you alright?"
+  }
+}
 
 function returnResponse() {
   this.emit(':responseReady');
@@ -115,23 +185,8 @@ const handlers = {
         // const input = this.event.request.intent.slots.response;
         var input = this.event.request.intent.slots.Question.value
 
-        // let inputPhrase;
-
-        // console.log(inputPhrase);
-
-
-        // console.log(input);
-
         console.log(input);
         console.log('hello hello bye');
-
-        // if (input && input.value) {
-        //     inputPhrase = input.value.toLowerCase();
-        // }
-
-        // if (input && input) {
-        //     input = input.value.toLowerCase();
-        // }
 
         console.log('hello hello 2');
 
@@ -140,7 +195,7 @@ const handlers = {
 
         if (input) {
             console.log('hello hello hello');
-            var speechOutput = input;
+            var speechOutput = randoResponse();
             var repromptSpeech = this.t('SPEECH_REPEAT_MESSAGE');
             this.emit(':ask', speechOutput, repromptSpeech);
 
@@ -154,7 +209,7 @@ const handlers = {
 
             sendentry(function(rec) {
               console.log('startig to send entry to server');
-              var message = input;
+              var message = querystring.stringify({input});
               this.emit(':tell', message);
               console.log(message);
             })
@@ -169,12 +224,24 @@ const handlers = {
                 speechOutput = this.t('SPEECH_NOT_UNDERSTOOD_MESSAGE');
             }
             speechOutput += repromptSpeech;
+            this.emit(':ask', speechOutput, repromptSpeech);
           }
-
-            // this.attributes.speechOutput = speechOutput;
-            // this.attributes.repromptSpeech = repromptSpeech;
-
-          // this.emit(':ask', speechOutput, repromptSpeech);
+    },
+    'NextIntent': function() {
+        var speechOutput = '';
+        speechOutput += "Flipping to the next page";
+        this.emit(":tell", speechOutput, speechOutput);
+        nextpage(function(rec) {
+          console.log("switching to the next page");
+        })
+    },
+    'HistoryIntent': function() {
+        var speechOutput = '';
+        speechOutput += "Pulling up your history";
+        this.emit(":tell", speechOutput, speechOutput);
+        history(function(rec) {
+          console.log("switching to the next page");
+        })
     },
     'AMAZON.HelpIntent': function () {
         var speechOutput = '';

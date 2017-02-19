@@ -47,8 +47,8 @@ def retrieveFromTable(startDate):
         print(str(emotionData))
         sessionData = {}
         for emotion in emotionData:
-            print(emotion)
+            # print(emotion)
             sessionData[str(emotion)] = emotionData[emotion]
         data.append(sessionData)
-    print(data)
+    # print(data)
     return data

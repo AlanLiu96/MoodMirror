@@ -66,6 +66,8 @@ def finish():
 
 @app.route('/graphs')
 def graphs():
+    # json = '{"mydate":new Date("%s")}' % date.ctime()
+    # json = getRecordedData()
     return render_template('graphs.html')
 
 # Android
@@ -75,7 +77,6 @@ def check_trigger():
     global should_take_photo
     print(should_take_photo)
     return jsonify({"ready": should_take_photo[0]})
-
 
 # Android
 # Checks if photo has been uploaded
@@ -144,12 +145,13 @@ def store_message():
     message = request.args.get('msg') # expect qString of msg
     if message == None:
         return "I couldn't find a message! :(" #error : no qString
-
     #Send to IBM Watson
     ret = send_watson(message) # ret val is a dict with emotion Ids mapped to emotion scores
+    retVal = max(ret, key=lambda key: ret[key])
+    print str(ret)
     ret['message'] = message
     sessions = addEmotions(ret) # adds to current Session
-    return message + " after being parsed: " + str(ret) + sessions
+    return retVal
 
 # Alexa
 # Signals move to next
@@ -206,25 +208,33 @@ def read_image(image_file):
     # had to "adjust" b/c need these categories
     ret['fear'] = likelihoodToNum(face.surprise.value) # sketchy stuff
     ret['disgust'] = 0.5* likelihoodToNum(face.surprise.value) + 0.3* likelihoodToNum(face.anger.value) + 0.2* likelihoodToNum(face.sorrow.value)
-
+    print str(ret)
     ret['message'] = None # empty placeholder
+
     # Performs label detection on the image file
-    labels = image.detect_labels()
-    print('Labels:')
-    for label in labels:
-        print(label.description)
+    # labels = image.detect_labels()
+    # print('Labels:')
+    # for label in labels:
+    #     print(label.description)
     addEmotions(ret)
     return "Facial Emotions: " + str(ret)
 
-@app.route('/test')
-def test():
+# @app.route('/test')
+def getRecordedData():
     start_date = datetime(1990, 1, 1)
     testDictList = retrieveFromTable(start_date)
-    for testDict in testDictList:
+    newList = []
+    for j in range(len(testDictList)):
+        testDict = testDictList[j]
         for i in range(len(testDict['messages'])):
             testDict['messages'][i] = str(testDict['messages'][i])
-        testDict = str(testDict)
-    return str(testDictList)
+            # json = '{"mydate":new Date("%s")}' % date.ctime()
+        # testDict1 = "{\'joy\': %f, \'datetime\': new Date(%s)}, \'sadness\': %f, \'disgust\': %f, \'anger\': %f, \'fear\': %f" % (testDict['joy'], testDict['datetime'].ctime(), testDict['sadness'], testDict['disgust'], testDict['anger'], testDict['fear'])
+        # testDict2 =  ",\'messages\': " + str(testDict['messages']) +  "}"
+        # testDict = testDict1 + testDict2
+        newList.append(testDict)
+        print newList
+    return str(newList)
 
 def likelihoodToNum(likelihoodStr):
     if likelihoodStr == "UNKNOWN":
@@ -255,4 +265,5 @@ def local_to_desiredTZ():
     return local_dt
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=3000, debug=True)
+    # app.run(host='0.0.0.0', port=3000, debug=True)
+    app.run(host='0.0.0.0', port=3000)

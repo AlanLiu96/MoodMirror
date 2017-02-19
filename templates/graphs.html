@@ -1,21 +1,25 @@
 {% extends "base.html" %}
 {% block content %}
+
     <div id="graphContent">
-    
-    </div>  
+
+    </div>
+
 {% endblock %}
 {% block scripts %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.5.1/d3.min.js"></script>
 <script>
-var data= [{'joy': 0.969091, 'messages': ['Hello World! :)'], 'datetime': new Date(2017, 2, 18, 19, 3, 25, 135095), 'sadness': 0.013941, 'disgust': 0.011139, 'anger': 0.023479, 'fear': 0.003429}, {'joy': 2.907273, 'messages': ['Hello World! :)', 'Hello World! :)', 'Hello World! :)'], 'datetime': new Date(2017, 2, 18, 19, 4, 31, 66822), 'sadness': 0.041823, 'disgust': 0.033417, 'anger': 0.070437, 'fear': 0.010287000000000001}, {'joy': 4.120879, 'messages': ['Hello World! :)', 'Hello World! :', 'Hello World! ', 'Hello Word! ', 'Hello Wod! '], 'datetime': new Date(2017, 2, 18, 19, 8, 46, 317477), 'sadness': 0.404192, 'disgust': 0.139427, 'anger': 0.370317, 'fear': 0.177183}, {'joy': 0.8100878, 'messages': ['Hello Wod! ', 'Hello Wrod! ', 'Hello Wrosd! ', 'Hello Wrosd!s ', 'Hello Wrosd!s '], 'datetime': new Date(2017, 2, 18, 19, 9, 49, 309913), 'sadness': 0.0439504, 'disgust': 0.0282088, 'anger': 0.1238524, 'fear': 0.0547894}];
+var data= [{'joy': 0.969091, 'messages': ['Hello World! :)'], 'datetime': new Date(2015, 2, 18, 19, 3, 25, 135095), 'sadness': 0.013941, 'disgust': 0.011139, 'anger': 0.023479, 'fear': 0.003429}, {'joy': 2.907273, 'messages': ['Hello World! :)', 'Hello World! :)', 'Hello World! :)'], 'datetime': new Date(2016, 2, 18, 19, 4, 31, 66822), 'sadness': 0.741823, 'disgust': 0.033417, 'anger': 0.070437, 'fear': 0.010287000000000001}, {'joy': 4.120879, 'messages': ['Hello World! :)', 'Hello World! :', 'Hello World! ', 'Hello Word! ', 'Hello Wod! '], 'datetime': new Date(2017, 2, 18, 19, 8, 46, 317477), 'sadness': 0.404192, 'disgust': 0.139427, 'anger': 0.980317, 'fear': 0.177183}, {'joy': 0.9000878, 'messages': ['Hello Wod! ', 'Hello Wrod! ', 'Hello Wrosd! ', 'Hello Wrosd!s ', 'Hello Wrosd!s '], 'datetime': new Date(2017, 2, 18, 19, 9, 49, 309913), 'sadness': 0.0439504, 'disgust': 0.0282088, 'anger': 0.6638524, 'fear': 0.0547894}];
+
+//var data = {{graphData|safe|tojson}};
 
 var emotes = ['joy','sadness','disgust','fear','anger']
 var colors = {
-    'joy': '#FF634D',
+    'joy': 'yellow',
     'sadness': 'cyan',
-    'disgust': '#6666FF',
-    'fear': '#EEE8AA',
-    'anger': 'green'
+    'disgust': 'green',
+    'fear': '#DF01A5',
+    'anger': 'red'
 }
 
 var canvas = d3.select("#graphContent").append("svg")
@@ -53,9 +57,9 @@ for(i in emotes){
     var DATA = []
     for(k in data){
         DATA.push({
-            'time': (data[k].datetime), 
+            'time': (data[k].datetime),
             'sentiment': +data[k][emotes[i]]
-        })  
+        })
     }
     DATA = DATA.sort(function(a,b){return b.time - a.time} )
     console.log(DATA)
@@ -103,19 +107,19 @@ for(i in emotes){
         .attr("stroke",colors[emotes[i]])
         .attr("stroke-width","2px")
         .attr("cx",function(d){ return x(d.time) })
-        .attr("cy",function(d){ return y(d.sentiment) }) 
+        .attr("cy",function(d){ return y(d.sentiment) })
         .attr("r", 3)
-        
+
      // define the y axis
     var yAxis = d3.svg.axis()
         .orient("left")
         .scale(y);
-    
+
     // define the y axis
     var xAxis = d3.svg.axis()
         .orient("bottom")
         .scale(x);
-        
+
     // draw y axis with labels and move in from the size by the amount of padding
     g.append("g")
         .attr("transform", "translate("+padding+",0)")
